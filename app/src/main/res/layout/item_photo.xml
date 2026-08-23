@@ -1,24 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="120dp"
-    android:padding="2dp">
+    android:layout_height="140dp"
+    android:layout_margin="4dp"
+    app:cardBackgroundColor="@color/bg_dark_surface"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:cardPreventCornerOverlap="true">
 
-    <ImageView
-        android:id="@+id/imageView"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:background="#EEEEEE"
-        android:contentDescription="photo" />
+        android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/fretBadge"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_gravity="bottom|end"
-        android:src="@drawable/ic_check_circle"
-        android:visibility="gone"
-        android:contentDescription="FRET MARK" />
+        <!-- Image Thumbnail -->
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/bg_dark_surface"
+            android:contentDescription="Photo Thumbnail"
+            android:scaleType="centerCrop" />
 
-</FrameLayout>
+        <!-- Subtle Glass Highlight Overlay -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_glass_card" />
+
+        <!-- Verification Status Pill Badge -->
+        <LinearLayout
+            android:id="@+id/statusBadgeContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_gravity="top|end"
+            android:layout_margin="8dp"
+            android:background="@drawable/bg_badge_genuine"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp">
+
+            <ImageView
+                android:id="@+id/statusBadgeIcon"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:src="@drawable/ic_shield_check" />
+
+            <TextView
+                android:id="@+id/statusBadgeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="0.05"
+                android:text="GENUINE"
+                android:textColor="@color/text_primary"
+                android:textSize="9sp" />
+        </LinearLayout>
+
+        <!-- Progress Spinner for active audit -->
+        <ProgressBar
+            android:id="@+id/cardProgressBar"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="8dp"
+            android:indeterminateTint="@color/accent_cyan"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+</androidx.cardview.widget.CardView>

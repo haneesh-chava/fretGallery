@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">fretGallery</string>
+    <string name="app_name">fretG</string>
+    <string name="app_tagline">Cryptographic Image Birth Certificate Gallery</string>
 </resources>

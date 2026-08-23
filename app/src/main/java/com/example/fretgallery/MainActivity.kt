@@ -1,146 +1,198 @@
 package com.example.fretgallery
 
 import android.Manifest
-import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageView
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.exifinterface.media.ExifInterface
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
+import com.example.fretgallery.camera.CameraActivity
+import com.example.fretgallery.data.SampleDataSeeder
+import com.example.fretgallery.model.GalleryItem
+import com.example.fretgallery.model.VerificationStatus
+import com.example.fretgallery.stego.SteganographyEngine
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.InputStream
-import java.security.MessageDigest
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var emptyText: View
-    private val images = mutableListOf<ImageItem>()
-    private val hashMap = mutableMapOf<Uri, String>()
+    private lateinit var emptyState: View
+    private lateinit var headerStats: TextView
+    private lateinit var tabAll: TextView
+    private lateinit var tabCertified: TextView
+    private lateinit var tabTampered: TextView
+    private lateinit var tabUncertified: TextView
+
+    private val allGalleryItems = mutableListOf<GalleryItem>()
+    private val displayedItems = mutableListOf<GalleryItem>()
+    private lateinit var adapter: PhotoAdapter
+
+    private var currentFilter = FilterTab.ALL
+    private var auditJob: Job? = null
+
+    enum class FilterTab {
+        ALL, CERTIFIED, TAMPERED, UNCERTIFIED
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         recyclerView = findViewById(R.id.recyclerView)
-        emptyText = findViewById(R.id.emptyText)
-        findViewById<View>(R.id.seedButton).setOnClickListener { seedTestData() }
+        emptyState = findViewById(R.id.emptyState)
+        headerStats = findViewById(R.id.headerStats)
+        tabAll = findViewById(R.id.tabAll)
+        tabCertified = findViewById(R.id.tabCertified)
+        tabTampered = findViewById(R.id.tabTampered)
+        tabUncertified = findViewById(R.id.tabUncertified)
+
+        adapter = PhotoAdapter(displayedItems) { item ->
+            openFullScreen(item)
+        }
+
         recyclerView.layoutManager = GridLayoutManager(this, 3)
-        recyclerView.adapter = PhotoAdapter(images)
+        recyclerView.adapter = adapter
 
-        if (hasPermission()) {
-            loadPhotos()
+        setupListeners()
+
+        if (hasPermissions()) {
+            loadGalleryPhotos()
         } else {
-            requestPermission()
+            requestPermissions()
         }
     }
 
-    private fun hasPermission(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_MEDIA_IMAGES
-            ) == PackageManager.PERMISSION_GRANTED
-        } else {
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ) == PackageManager.PERMISSION_GRANTED
+    override fun onResume() {
+        super.onResume()
+        if (hasPermissions()) {
+            loadGalleryPhotos()
         }
     }
 
-    private fun requestPermission() {
-        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arrayOf(Manifest.permission.READ_MEDIA_IMAGES)
-        } else {
-            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+    private fun setupListeners() {
+        // Tab Filters
+        tabAll.setOnClickListener { selectTab(FilterTab.ALL) }
+        tabCertified.setOnClickListener { selectTab(FilterTab.CERTIFIED) }
+        tabTampered.setOnClickListener { selectTab(FilterTab.TAMPERED) }
+        tabUncertified.setOnClickListener { selectTab(FilterTab.UNCERTIFIED) }
+
+        // Floating Bottom Actions
+        findViewById<View>(R.id.btnLaunchCamera).setOnClickListener {
+            startActivity(Intent(this, CameraActivity::class.java))
         }
-        ActivityCompat.requestPermissions(this, permissions, 100)
+
+        findViewById<View>(R.id.btnSeedDemo).setOnClickListener {
+            seedDemoPhotos()
+        }
+
+        findViewById<View>(R.id.btnRefresh).setOnClickListener {
+            loadGalleryPhotos()
+        }
+
+        findViewById<View>(R.id.btnAuditAll).setOnClickListener {
+            auditAllPhotos()
+        }
+
+        // Empty state buttons
+        findViewById<Button>(R.id.btnEmptyCapture).setOnClickListener {
+            startActivity(Intent(this, CameraActivity::class.java))
+        }
+
+        findViewById<Button>(R.id.btnEmptySeed).setOnClickListener {
+            seedDemoPhotos()
+        }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 100 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            loadPhotos()
-        } else {
-            Toast.makeText(this, "Permission required to display photos", Toast.LENGTH_SHORT).show()
-        }
-    }
+    private fun selectTab(tab: FilterTab) {
+        currentFilter = tab
 
-    private fun seedTestData() {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val resolver = contentResolver
-                val contentValues = ContentValues().apply {
-                    put(MediaStore.MediaColumns.DISPLAY_NAME, "FRET_TEST_${System.currentTimeMillis()}.jpg")
-                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM + "/Camera")
-                        put(MediaStore.MediaColumns.IS_PENDING, 1)
-                    }
-                }
+        val activeBg = R.drawable.bg_glass_pill_active
+        val activeTextColor = ContextCompat.getColor(this, R.color.ios_pill_active_text)
+        val inactiveTextColor = ContextCompat.getColor(this, R.color.ios_pill_inactive_text)
 
-                val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-                uri?.let {
-                    resolver.openOutputStream(it)?.use { stream ->
-                        val bitmap = Bitmap.createBitmap(500, 500, Bitmap.Config.ARGB_8888)
-                        val canvas = Canvas(bitmap)
-                        val paint = Paint()
-                        paint.color = Color.BLUE
-                        canvas.drawRect(0f, 0f, 500f, 500f, paint)
-                        paint.color = Color.WHITE
-                        paint.textSize = 50f
-                        canvas.drawText("FRET TEST", 100f, 250f, paint)
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
-                    }
+        tabAll.background = null
+        tabAll.setTextColor(inactiveTextColor)
+        tabCertified.background = null
+        tabCertified.setTextColor(inactiveTextColor)
+        tabTampered.background = null
+        tabTampered.setTextColor(inactiveTextColor)
+        tabUncertified.background = null
+        tabUncertified.setTextColor(inactiveTextColor)
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        contentValues.clear()
-                        contentValues.put(MediaStore.MediaColumns.IS_PENDING, 0)
-                        resolver.update(uri, contentValues, null, null)
-                    }
-                    
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(this@MainActivity, "Photo seeded to DCIM/Camera", Toast.LENGTH_SHORT).show()
-                        loadPhotos()
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e("FRET", "Seed failed", e)
+        when (tab) {
+            FilterTab.ALL -> {
+                tabAll.setBackgroundResource(activeBg)
+                tabAll.setTextColor(activeTextColor)
+            }
+            FilterTab.CERTIFIED -> {
+                tabCertified.setBackgroundResource(activeBg)
+                tabCertified.setTextColor(activeTextColor)
+            }
+            FilterTab.TAMPERED -> {
+                tabTampered.setBackgroundResource(activeBg)
+                tabTampered.setTextColor(activeTextColor)
+            }
+            FilterTab.UNCERTIFIED -> {
+                tabUncertified.setBackgroundResource(activeBg)
+                tabUncertified.setTextColor(activeTextColor)
             }
         }
+
+        applyFilter()
     }
 
-    private fun loadPhotos() {
-        Log.d("FRET", "loadPhotos started")
-        images.clear()
-        hashMap.clear()
+    private fun applyFilter() {
+        val filtered = when (currentFilter) {
+            FilterTab.ALL -> allGalleryItems
+            FilterTab.CERTIFIED -> allGalleryItems.filter {
+                it.status == VerificationStatus.GENUINE_CERTIFIED || it.status == VerificationStatus.LEGACY_CAMERA
+            }
+            FilterTab.TAMPERED -> allGalleryItems.filter {
+                it.status == VerificationStatus.TAMPERED_WARNING
+            }
+            FilterTab.UNCERTIFIED -> allGalleryItems.filter {
+                it.status == VerificationStatus.UNCERTIFIED_EXTERNAL
+            }
+        }
+
+        displayedItems.clear()
+        displayedItems.addAll(filtered)
+        adapter.notifyDataSetChanged()
+
+        updateHeaderStats()
+        emptyState.visibility = if (displayedItems.isEmpty()) View.VISIBLE else View.GONE
+    }
+
+    private fun updateHeaderStats() {
+        val total = allGalleryItems.size
+        val certified = allGalleryItems.count { it.status == VerificationStatus.GENUINE_CERTIFIED }
+        val tampered = allGalleryItems.count { it.status == VerificationStatus.TAMPERED_WARNING }
+
+        tabAll.text = "All ($total)"
+        tabCertified.text = "Certified ($certified)"
+        tabTampered.text = "Tampered ($tampered)"
+
+        headerStats.text = "$certified Certified Proofs • $total Total Media"
+    }
+
+    private fun loadGalleryPhotos() {
+        allGalleryItems.clear()
 
         val collection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
@@ -150,138 +202,133 @@ class MainActivity : AppCompatActivity() {
 
         val projection = arrayOf(
             MediaStore.Images.Media._ID,
+            MediaStore.Images.Media.DISPLAY_NAME,
+            MediaStore.Images.Media.DATE_ADDED,
+            MediaStore.Images.Media.SIZE,
             MediaStore.Images.Media.RELATIVE_PATH,
             MediaStore.Images.Media.DATA
         )
         val sortOrder = "${MediaStore.Images.Media.DATE_ADDED} DESC"
 
-        contentResolver.query(
-            collection,
-            projection,
-            null,
-            null,
-            sortOrder
-        )?.use { cursor ->
-            Log.d("FRET", "Cursor count: ${cursor.count}")
-            val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
-            val relativePathColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.RELATIVE_PATH)
-            val dataColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+        try {
+            contentResolver.query(collection, projection, null, null, sortOrder)?.use { cursor ->
+                val idCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
+                val nameCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME)
+                val dateCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_ADDED)
+                val sizeCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.SIZE)
+                val relCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.RELATIVE_PATH)
+                val dataCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
 
-            while (cursor.moveToNext()) {
-                val id = cursor.getLong(idColumn)
-                val contentUri = Uri.withAppendedPath(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    id.toString()
-                )
-                val relativePath = cursor.getString(relativePathColumn) ?: ""
-                val dataPath = cursor.getString(dataColumn) ?: ""
+                while (cursor.moveToNext()) {
+                    val id = cursor.getLong(idCol)
+                    val name = cursor.getString(nameCol) ?: "Image"
+                    val dateAdded = cursor.getLong(dateCol)
+                    val size = cursor.getLong(sizeCol)
+                    val relPath = cursor.getString(relCol) ?: ""
+                    val dataPath = cursor.getString(dataCol) ?: ""
 
-                val isCameraPhoto = isCameraPhoto(relativePath, dataPath, contentUri)
-                images.add(ImageItem(contentUri, isCameraPhoto))
+                    val contentUri = Uri.withAppendedPath(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        id.toString()
+                    )
 
-                if (isCameraPhoto) {
-                    // Compute hash in background
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val hash = computeHash(contentUri)
-                        if (hash != null) {
-                            hashMap[contentUri] = hash
-                        }
+                    val item = GalleryItem(
+                        uri = contentUri,
+                        name = name,
+                        dateAdded = dateAdded,
+                        sizeBytes = size,
+                        isChecking = true
+                    )
+                    allGalleryItems.add(item)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        applyFilter()
+        auditAllPhotos()
+    }
+
+    private fun auditAllPhotos() {
+        auditJob?.cancel()
+        auditJob = CoroutineScope(Dispatchers.IO).launch {
+            for ((index, item) in allGalleryItems.withIndex()) {
+                val result = SteganographyEngine.verifyImageIntegrity(this@MainActivity, item.uri)
+                item.verificationResult = result
+                item.isChecking = false
+
+                withContext(Dispatchers.Main) {
+                    if (displayedItems.contains(item)) {
+                        adapter.notifyItemChanged(displayedItems.indexOf(item))
                     }
+                    updateHeaderStats()
                 }
             }
         }
-        recyclerView.adapter?.notifyDataSetChanged()
-        emptyText.visibility = if (images.isEmpty()) View.VISIBLE else View.GONE
     }
 
-    private fun isCameraPhoto(relativePath: String, dataPath: String, uri: Uri): Boolean {
-        // Check path
-        if (relativePath.contains("DCIM", ignoreCase = true) ||
-            relativePath.contains("Camera", ignoreCase = true) ||
-            dataPath.contains("DCIM", ignoreCase = true) ||
-            dataPath.contains("Camera", ignoreCase = true)
-        ) {
-            return true
-        }
+    private fun seedDemoPhotos() {
+        Toast.makeText(this, "Minting sample cryptographic photos...", Toast.LENGTH_SHORT).show()
+        CoroutineScope(Dispatchers.IO).launch {
+            // 1. Seed Genuine Certified Photo
+            SampleDataSeeder.seedSamplePhoto(this@MainActivity, SampleDataSeeder.SeedType.GENUINE_CERTIFIED, "GENUINE")
+            // 2. Seed Tampered Demo Photo
+            SampleDataSeeder.seedSamplePhoto(this@MainActivity, SampleDataSeeder.SeedType.TAMPERED_DEMO, "TAMPERED")
+            // 3. Seed Uncertified Photo
+            SampleDataSeeder.seedSamplePhoto(this@MainActivity, SampleDataSeeder.SeedType.UNCERTIFIED, "EXTERNAL")
 
-        // Fallback: check EXIF
-        return try {
-            val inputStream: InputStream? = contentResolver.openInputStream(uri)
-            if (inputStream != null) {
-                val exif = ExifInterface(inputStream)
-                val make = exif.getAttribute(ExifInterface.TAG_MAKE)
-                val model = exif.getAttribute(ExifInterface.TAG_MODEL)
-                val software = exif.getAttribute(ExifInterface.TAG_SOFTWARE)
-                inputStream.close()
-                !make.isNullOrBlank() || !model.isNullOrBlank() || !software.isNullOrBlank()
-            } else {
-                false
+            withContext(Dispatchers.Main) {
+                Toast.makeText(this@MainActivity, "Demo Photos Minted to DCIM/fretG!", Toast.LENGTH_SHORT).show()
+                loadGalleryPhotos()
             }
-        } catch (e: Exception) {
-            false
         }
     }
 
-    private fun computeHash(uri: Uri): String? {
-        return try {
-            val inputStream = contentResolver.openInputStream(uri) ?: return null
-            val digest = MessageDigest.getInstance("SHA-256")
-            val buffer = ByteArray(8192)
-            var bytesRead: Int
-            while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                digest.update(buffer, 0, bytesRead)
+    private fun openFullScreen(item: GalleryItem) {
+        val intent = Intent(this, FullScreenActivity::class.java).apply {
+            putExtra("imageUri", item.uri.toString())
+            putExtra("imageName", item.name)
+            item.verificationResult?.let {
+                putExtra("verificationResultJson", Gson().toJson(it))
             }
-            inputStream.close()
-            val hashBytes = digest.digest()
-            hashBytes.joinToString("") { "%02x".format(it) }
-        } catch (e: Exception) {
-            null
+        }
+        startActivity(intent)
+    }
+
+    private fun hasPermissions(): Boolean {
+        val mediaPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED
+        } else {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+        }
+        return mediaPermission
+    }
+
+    private fun requestPermissions() {
+        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arrayOf(Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.CAMERA)
+        } else {
+            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
+        }
+        ActivityCompat.requestPermissions(this, permissions, 101)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 101 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            loadGalleryPhotos()
+        } else {
+            Toast.makeText(this, "Storage permission is required to display your gallery", Toast.LENGTH_SHORT).show()
         }
     }
 
-    data class ImageItem(val uri: Uri, val isVerified: Boolean)
-
-    inner class PhotoAdapter(private val items: List<ImageItem>) :
-        RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_photo, parent, false)
-            return PhotoViewHolder(view)
-        }
-
-        override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
-            val item = items[position]
-            holder.imageView.load(item.uri) {
-                crossfade(true)
-            }
-            if (item.isVerified) {
-                holder.badge.visibility = View.VISIBLE
-            } else {
-                holder.badge.visibility = View.GONE
-            }
-
-            holder.imageView.setOnClickListener {
-                val intent = Intent(this@MainActivity, FullScreenActivity::class.java)
-                intent.putExtra("imageUri", item.uri.toString())
-                intent.putExtra("isVerified", item.isVerified)
-                startActivity(intent)
-            }
-
-            holder.imageView.setOnLongClickListener {
-                if (item.isVerified) {
-                    val hash = hashMap[item.uri] ?: "Hash not computed yet"
-                    Toast.makeText(this@MainActivity, "SHA-256: $hash", Toast.LENGTH_LONG).show()
-                }
-                true
-            }
-        }
-
-        override fun getItemCount(): Int = items.size
-
-        inner class PhotoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val imageView: ImageView = itemView.findViewById(R.id.imageView)
-            val badge: ImageView = itemView.findViewById(R.id.fretBadge)
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        auditJob?.cancel()
     }
 }
