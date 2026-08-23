@@ -5,11 +5,13 @@
         <item name="android:windowBackground">@color/bg_dark</item>
         <item name="android:statusBarColor">@color/bg_dark</item>
         <item name="android:navigationBarColor">@color/bg_dark</item>
-        <item name="colorPrimary">@color/accent_cyan</item>
-        <item name="colorSecondary">@color/accent_purple</item>
+        <item name="colorPrimary">@color/accent_red_bright</item>
+        <item name="colorSecondary">@color/accent_peach</item>
         <item name="colorSurface">@color/bg_dark_surface</item>
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:fontFamily">@font/quicksand</item>
+        <item name="fontFamily">@font/quicksand</item>
         <item name="bottomSheetDialogTheme">@style/Theme.FretGallery.BottomSheetDialog</item>
     </style>
 

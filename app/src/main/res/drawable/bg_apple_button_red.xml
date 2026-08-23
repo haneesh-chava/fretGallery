@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="#40FFFFFF">
+    <item>
+        <layer-list>
+            <!-- Outer Glow Stroke -->
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="@android:color/transparent" />
+                    <corners android:radius="100dp" />
+                    <stroke
+                        android:width="2.5dp"
+                        android:color="@color/glass_border_red_glow" />
+                </shape>
+            </item>
+            <!-- Inner Red Gradient Capsule -->
+            <item
+                android:bottom="2dp"
+                android:left="2dp"
+                android:right="2dp"
+                android:top="2dp">
+                <shape android:shape="rectangle">
+                    <gradient
+                        android:angle="135"
+                        android:startColor="#FF3B56"
+                        android:centerColor="#E11D48"
+                        android:endColor="#9F1239"
+                        android:type="linear" />
+                    <corners android:radius="100dp" />
+                    <stroke
+                        android:width="1dp"
+                        android:color="#60FFFFFF" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+</ripple>

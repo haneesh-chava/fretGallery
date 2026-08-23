@@ -77,8 +77,8 @@ class BirthCertificateBottomSheet : BottomSheetDialogFragment() {
         val auditLogContainer = view.findViewById<LinearLayout>(R.id.auditLogContainer)
         val btnCopyCertId = view.findViewById<ImageView>(R.id.btnCopyCertId)
         val btnCopySha = view.findViewById<ImageView>(R.id.btnCopySha)
-        val btnLiveAudit = view.findViewById<Button>(R.id.btnLiveAudit)
-        val btnCloseSheet = view.findViewById<Button>(R.id.btnCloseSheet)
+        val btnLiveAudit = view.findViewById<View>(R.id.btnLiveAudit)
+        val btnCloseSheet = view.findViewById<View>(R.id.btnCloseSheet)
 
         // Status banner styling
         when (result?.status) {
@@ -91,7 +91,7 @@ class BirthCertificateBottomSheet : BottomSheetDialogFragment() {
             VerificationStatus.TAMPERED_WARNING -> {
                 bannerIcon.setImageResource(R.drawable.ic_shield_alert)
                 bannerStatusTitle.text = "TAMPER DETECTED"
-                bannerStatusTitle.setTextColor(Color.parseColor("#EF4444"))
+                bannerStatusTitle.setTextColor(Color.parseColor("#FF1E42"))
                 bannerStatusSubtitle.text = "Hash mismatch: image was modified or corrupted after capture"
             }
             VerificationStatus.LEGACY_CAMERA -> {
@@ -221,9 +221,10 @@ class BirthCertificateBottomSheet : BottomSheetDialogFragment() {
         val uri = imageUri ?: return
         val context = context ?: return
 
-        val btnLiveAudit = view.findViewById<Button>(R.id.btnLiveAudit)
+        val txtLiveAudit = view.findViewById<TextView>(R.id.txtLiveAudit)
+        val btnLiveAudit = view.findViewById<View>(R.id.btnLiveAudit)
         btnLiveAudit.isEnabled = false
-        btnLiveAudit.text = "Auditing Bitstream & Signature..."
+        txtLiveAudit?.text = "AUDITING BITSTREAM..."
 
         CoroutineScope(Dispatchers.Main).launch {
             val freshResult = withContext(Dispatchers.IO) {
@@ -232,7 +233,7 @@ class BirthCertificateBottomSheet : BottomSheetDialogFragment() {
             verificationResult = freshResult
             bindData(view)
             btnLiveAudit.isEnabled = true
-            btnLiveAudit.text = "Re-Scan Complete"
+            txtLiveAudit?.text = "RE-SCAN COMPLETE"
             Toast.makeText(context, "Forensic audit complete: ${freshResult.status.name}", Toast.LENGTH_SHORT).show()
         }
     }

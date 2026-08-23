@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- Grid Overlay (Optional) -->
+    <!-- Grid Overlay -->
     <FrameLayout
         android:id="@+id/gridOverlay"
         android:layout_width="match_parent"
@@ -23,9 +23,9 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
             <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
-            <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#40FFFFFF" />
+            <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#33FFFFFF" />
             <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
-            <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#40FFFFFF" />
+            <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#33FFFFFF" />
             <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
         </LinearLayout>
 
@@ -34,14 +34,14 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
             <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
-            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#40FFFFFF" />
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#33FFFFFF" />
             <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
-            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#40FFFFFF" />
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#33FFFFFF" />
             <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
         </LinearLayout>
     </FrameLayout>
 
-    <!-- Top Frosted Glass Bar -->
+    <!-- Top Frosted Glass Bar with fret Brand Logo -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -49,19 +49,24 @@
         android:background="@color/bg_glass_header"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="20dp"
-        android:paddingTop="48dp"
-        android:paddingBottom="14dp">
+        android:paddingHorizontal="16dp"
+        android:paddingTop="44dp"
+        android:paddingBottom="12dp">
 
-        <ImageView
+        <FrameLayout
             android:id="@+id/btnCameraClose"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/bg_glass_pill"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_apple_button"
             android:clickable="true"
-            android:focusable="true"
-            android:padding="8dp"
-            android:src="@drawable/ic_close" />
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_close" />
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -73,52 +78,63 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_badge_genuine"
+                android:background="@drawable/bg_liquid_glass_active"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingHorizontal="10dp"
+                android:paddingHorizontal="12dp"
                 android:paddingVertical="4dp">
 
                 <ImageView
                     android:layout_width="12dp"
                     android:layout_height="12dp"
-                    android:src="@drawable/ic_shield_check" />
+                    android:src="@drawable/ic_shield_check"
+                    app:tint="@color/accent_red_bright" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:fontFamily="sans-serif-black"
-                    android:letterSpacing="0.05"
-                    android:text="fretG PROVENANCE SEAL ACTIVE"
+                    android:layout_marginStart="6dp"
+                    android:fontFamily="@font/handjet"
+                    android:letterSpacing="0.04"
+                    android:text="fretG PROVENANCE SEAL"
                     android:textColor="@color/text_primary"
-                    android:textSize="9sp" />
+                    android:textSize="14sp" />
             </LinearLayout>
 
         </LinearLayout>
 
         <!-- Flash Toggle -->
-        <ImageView
+        <FrameLayout
             android:id="@+id/btnFlashToggle"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/bg_glass_pill"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_apple_button"
             android:clickable="true"
-            android:focusable="true"
-            android:padding="8dp"
-            android:src="@drawable/ic_flash_auto" />
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_flash_auto" />
+        </FrameLayout>
 
         <!-- Camera Switch -->
-        <ImageView
+        <FrameLayout
             android:id="@+id/btnCameraSwitch"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="10dp"
-            android:background="@drawable/bg_glass_pill"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_apple_button"
             android:clickable="true"
-            android:focusable="true"
-            android:padding="8dp"
-            android:src="@drawable/ic_camera_flip" />
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_camera_flip" />
+        </FrameLayout>
 
     </LinearLayout>
 
@@ -127,19 +143,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|center_horizontal"
-        android:layout_marginTop="110dp"
+        android:layout_marginTop="105dp"
         android:background="@drawable/bg_glass_card_elevated"
-        android:paddingHorizontal="12dp"
+        android:paddingHorizontal="14dp"
         android:paddingVertical="6dp">
 
         <TextView
             android:id="@+id/txtTelemetryLive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="monospace"
-            android:text="4K • 1/120s • ISO 100 • 24mm • SHA-256 MINT READY"
-            android:textColor="@color/accent_cyan"
-            android:textSize="10sp" />
+            android:fontFamily="@font/quicksand"
+            android:text="4K • 1/120s • ISO 100 • 24mm • SHA-256 SEAL READY"
+            android:textColor="@color/accent_red_bright"
+            android:textSize="11sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <!-- Bottom Controls & Shutter -->
@@ -151,39 +168,39 @@
         android:gravity="center"
         android:orientation="vertical"
         android:paddingHorizontal="24dp"
-        android:paddingTop="20dp"
+        android:paddingTop="16dp"
         android:paddingBottom="40dp">
 
         <!-- Zoom Pills -->
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:layout_marginBottom="24dp"
+            android:layout_height="34dp"
+            android:layout_marginBottom="20dp"
             android:background="@drawable/bg_glass_pill"
             android:orientation="horizontal"
             android:padding="2dp">
 
             <TextView
                 android:id="@+id/zoom1x"
-                android:layout_width="44dp"
+                android:layout_width="48dp"
                 android:layout_height="match_parent"
-                android:background="@drawable/bg_glass_pill_active"
-                android:fontFamily="sans-serif-black"
+                android:background="@drawable/bg_liquid_glass_active"
+                android:fontFamily="@font/handjet"
                 android:gravity="center"
                 android:text="1x"
-                android:textColor="#080B10"
-                android:textSize="12sp" />
+                android:textColor="@color/text_primary"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/zoom2x"
-                android:layout_width="44dp"
+                android:layout_width="48dp"
                 android:layout_height="match_parent"
                 android:background="@android:color/transparent"
-                android:fontFamily="sans-serif-black"
+                android:fontFamily="@font/quicksand"
                 android:gravity="center"
                 android:text="2x"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp" />
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp" />
         </LinearLayout>
 
         <!-- Shutter Bar -->
@@ -192,23 +209,29 @@
             android:layout_height="wrap_content">
 
             <!-- Gallery Shortcut -->
-            <ImageView
+            <FrameLayout
                 android:id="@+id/btnGalleryShortcut"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
-                android:background="@drawable/bg_glass_pill"
+                android:background="@drawable/bg_apple_button"
                 android:clickable="true"
-                android:focusable="true"
-                android:padding="12dp"
-                android:src="@drawable/ic_fingerprint" />
+                android:focusable="true">
 
-            <!-- Apple iOS Style Shutter Button -->
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_fingerprint"
+                    app:tint="@color/accent_red_bright" />
+            </FrameLayout>
+
+            <!-- Apple Style Shutter Button with Rich Red Radial Accent -->
             <FrameLayout
                 android:id="@+id/btnShutter"
-                android:layout_width="76dp"
-                android:layout_height="76dp"
+                android:layout_width="78dp"
+                android:layout_height="78dp"
                 android:layout_centerInParent="true"
                 android:background="@drawable/bg_shutter_outer"
                 android:clickable="true"
@@ -219,7 +242,7 @@
                     android:id="@+id/shutterInner"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/bg_shutter_inner" />
+                    android:background="@drawable/bg_apple_button_red" />
             </FrameLayout>
 
         </RelativeLayout>
@@ -231,7 +254,7 @@
         android:id="@+id/mintingOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#CC080B10"
+        android:background="#E608090E"
         android:clickable="true"
         android:focusable="true"
         android:visibility="gone">
@@ -248,25 +271,27 @@
             <ProgressBar
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:indeterminateTint="@color/accent_cyan" />
+                android:indeterminateTint="@color/accent_red_bright" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:fontFamily="sans-serif-bold"
-                android:text="Minting Birth Certificate..."
+                android:fontFamily="@font/handjet"
+                android:letterSpacing="0.03"
+                android:text="MINTING BIRTH CERTIFICATE"
                 android:textColor="@color/text_primary"
-                android:textSize="16sp" />
+                android:textSize="24sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:fontFamily="sans-serif-medium"
+                android:fontFamily="@font/quicksand"
                 android:text="Embedding Steganographic Parity Matrix"
-                android:textColor="@color/accent_cyan"
-                android:textSize="12sp" />
+                android:textColor="@color/accent_red_bright"
+                android:textSize="12sp"
+                android:textStyle="bold" />
         </LinearLayout>
     </FrameLayout>
 

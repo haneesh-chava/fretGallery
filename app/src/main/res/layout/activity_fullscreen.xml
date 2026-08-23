@@ -21,18 +21,23 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
-        android:paddingTop="48dp"
+        android:paddingTop="44dp"
         android:paddingBottom="14dp">
 
-        <ImageView
+        <FrameLayout
             android:id="@+id/btnBack"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/bg_glass_pill"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_apple_button"
             android:clickable="true"
-            android:focusable="true"
-            android:padding="8dp"
-            android:src="@drawable/ic_arrow_back" />
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_arrow_back" />
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -46,18 +51,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:fontFamily="sans-serif-bold"
+                android:fontFamily="@font/handjet"
                 android:maxLines="1"
-                android:text="FRETG_Photo.jpg"
+                android:text="PHOTO PREVIEW"
                 android:textColor="@color/text_primary"
-                android:textSize="15sp" />
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/txtImageDetails"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:fontFamily="sans-serif-medium"
+                android:fontFamily="@font/quicksand"
                 android:text="Forensic Provenance Loaded"
                 android:textColor="@color/text_secondary"
                 android:textSize="11sp" />
@@ -67,11 +71,11 @@
         <LinearLayout
             android:id="@+id/topStatusBadge"
             android:layout_width="wrap_content"
-            android:layout_height="32dp"
+            android:layout_height="34dp"
             android:background="@drawable/bg_badge_genuine"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingHorizontal="10dp">
+            android:paddingHorizontal="12dp">
 
             <ImageView
                 android:id="@+id/topStatusIcon"
@@ -84,16 +88,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
-                android:fontFamily="sans-serif-black"
+                android:fontFamily="@font/handjet"
                 android:letterSpacing="0.05"
                 android:text="GENUINE"
                 android:textColor="@color/text_primary"
-                android:textSize="10sp" />
+                android:textSize="15sp" />
         </LinearLayout>
 
     </LinearLayout>
 
-    <!-- Bottom Floating Action Bar -->
+    <!-- Bottom Floating Action Bar with Apple Red Capsule Button -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -101,32 +105,38 @@
         android:paddingHorizontal="24dp"
         android:paddingBottom="36dp">
 
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/btnInspectCertificate"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:background="@drawable/bg_ios_button_primary"
+            android:background="@drawable/bg_apple_button_red"
             android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:focusable="true">
 
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@drawable/ic_fingerprint"
-                app:tint="#080B10" />
-
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:fontFamily="sans-serif-black"
-                android:letterSpacing="0.02"
-                android:text="Inspect Birth Certificate"
-                android:textColor="#080B10"
-                android:textSize="15sp" />
-        </LinearLayout>
+                android:layout_gravity="center"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_fingerprint"
+                    app:tint="#FFFFFF" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/handjet"
+                    android:letterSpacing="0.04"
+                    android:text="INSPECT BIRTH CERTIFICATE"
+                    android:textColor="#FFFFFF"
+                    android:textSize="22sp" />
+            </LinearLayout>
+        </FrameLayout>
 
     </LinearLayout>
 

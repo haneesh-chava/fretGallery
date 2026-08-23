@@ -36,7 +36,8 @@ object SampleDataSeeder {
     suspend fun seedSamplePhoto(
         context: Context,
         seedType: SeedType = SeedType.GENUINE_CERTIFIED,
-        titleSuffix: String = ""
+        titleSuffix: String = "",
+        folderSubpath: String = Environment.DIRECTORY_DCIM + "/fretG"
     ): Uri? = withContext(Dispatchers.IO) {
         try {
             val width = 1080
@@ -44,22 +45,22 @@ object SampleDataSeeder {
             val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(bitmap)
 
-            // Draw premium gradient background
+            // Draw rich red aesthetic radial/linear gradient background
             val paint = Paint(Paint.ANTI_ALIAS_FLAG)
             val gradient = when (seedType) {
                 SeedType.GENUINE_CERTIFIED -> LinearGradient(
                     0f, 0f, width.toFloat(), height.toFloat(),
-                    intArrayOf(Color.parseColor("#0A192F"), Color.parseColor("#0284C7"), Color.parseColor("#10B981")),
+                    intArrayOf(Color.parseColor("#1A050A"), Color.parseColor("#E11D48"), Color.parseColor("#FF1E42")),
                     null, Shader.TileMode.CLAMP
                 )
                 SeedType.TAMPERED_DEMO -> LinearGradient(
                     0f, 0f, width.toFloat(), height.toFloat(),
-                    intArrayOf(Color.parseColor("#3B0764"), Color.parseColor("#9333EA"), Color.parseColor("#EF4444")),
+                    intArrayOf(Color.parseColor("#2E0812"), Color.parseColor("#9F1239"), Color.parseColor("#FF3B56")),
                     null, Shader.TileMode.CLAMP
                 )
                 SeedType.UNCERTIFIED -> LinearGradient(
                     0f, 0f, width.toFloat(), height.toFloat(),
-                    intArrayOf(Color.parseColor("#1E293B"), Color.parseColor("#334155"), Color.parseColor("#475569")),
+                    intArrayOf(Color.parseColor("#0F141F"), Color.parseColor("#1E293B"), Color.parseColor("#334155")),
                     null, Shader.TileMode.CLAMP
                 )
             }
@@ -108,9 +109,9 @@ object SampleDataSeeder {
             }
 
             val badgeText = when (seedType) {
-                SeedType.GENUINE_CERTIFIED -> "fretG CERTIFIED PHOTO"
-                SeedType.TAMPERED_DEMO -> "TAMPERED DEMO PHOTO"
-                SeedType.UNCERTIFIED -> "UNCERTIFIED MEDIA"
+                SeedType.GENUINE_CERTIFIED -> "fretG CERTIFIED"
+                SeedType.TAMPERED_DEMO -> "TAMPERED DEMO"
+                SeedType.UNCERTIFIED -> "MEDIA SAMPLE"
             }
             canvas.drawText(badgeText, width / 2f, height / 2f - 40f, textPaint)
             canvas.drawText("Cryptographic Provenance Engine", width / 2f, height / 2f + 40f, subTextPaint)
@@ -209,7 +210,7 @@ object SampleDataSeeder {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
                 put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM + "/fretG")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, folderSubpath)
                     put(MediaStore.MediaColumns.IS_PENDING, 1)
                 }
             }

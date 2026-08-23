@@ -8,19 +8,20 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
-import android.widget.Button
-import android.widget.LinearLayout
+import android.widget.FrameLayout
+import android.widget.HorizontalScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fretgallery.camera.CameraActivity
 import com.example.fretgallery.data.SampleDataSeeder
 import com.example.fretgallery.model.GalleryItem
-import com.example.fretgallery.model.VerificationStatus
+import com.example.fretgallery.model.GallerySection
 import com.example.fretgallery.stego.SteganographyEngine
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
@@ -33,22 +34,30 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var emptyState: View
+    private lateinit var emptyStateTitle: TextView
+    private lateinit var emptyStateSubtitle: TextView
+    private lateinit var activeSectionHeading: TextView
     private lateinit var headerStats: TextView
-    private lateinit var tabAll: TextView
-    private lateinit var tabCertified: TextView
-    private lateinit var tabTampered: TextView
-    private lateinit var tabUncertified: TextView
+
+    private lateinit var sectionScrollView: HorizontalScrollView
+    private lateinit var tabCamera: FrameLayout
+    private lateinit var tabScreenshots: FrameLayout
+    private lateinit var tabDownloads: FrameLayout
+    private lateinit var tabWhatsapp: FrameLayout
+    private lateinit var tabInstagram: FrameLayout
+
+    private lateinit var txtTabCamera: TextView
+    private lateinit var txtTabScreenshots: TextView
+    private lateinit var txtTabDownloads: TextView
+    private lateinit var txtTabWhatsapp: TextView
+    private lateinit var txtTabInstagram: TextView
 
     private val allGalleryItems = mutableListOf<GalleryItem>()
     private val displayedItems = mutableListOf<GalleryItem>()
     private lateinit var adapter: PhotoAdapter
 
-    private var currentFilter = FilterTab.ALL
+    private var currentSection = GallerySection.CAMERA
     private var auditJob: Job? = null
-
-    enum class FilterTab {
-        ALL, CERTIFIED, TAMPERED, UNCERTIFIED
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,11 +65,23 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerView)
         emptyState = findViewById(R.id.emptyState)
+        emptyStateTitle = findViewById(R.id.emptyStateTitle)
+        emptyStateSubtitle = findViewById(R.id.emptyStateSubtitle)
+        activeSectionHeading = findViewById(R.id.activeSectionHeading)
         headerStats = findViewById(R.id.headerStats)
-        tabAll = findViewById(R.id.tabAll)
-        tabCertified = findViewById(R.id.tabCertified)
-        tabTampered = findViewById(R.id.tabTampered)
-        tabUncertified = findViewById(R.id.tabUncertified)
+
+        sectionScrollView = findViewById(R.id.sectionScrollView)
+        tabCamera = findViewById(R.id.tabCamera)
+        tabScreenshots = findViewById(R.id.tabScreenshots)
+        tabDownloads = findViewById(R.id.tabDownloads)
+        tabWhatsapp = findViewById(R.id.tabWhatsapp)
+        tabInstagram = findViewById(R.id.tabInstagram)
+
+        txtTabCamera = findViewById(R.id.txtTabCamera)
+        txtTabScreenshots = findViewById(R.id.txtTabScreenshots)
+        txtTabDownloads = findViewById(R.id.txtTabDownloads)
+        txtTabWhatsapp = findViewById(R.id.txtTabWhatsapp)
+        txtTabInstagram = findViewById(R.id.txtTabInstagram)
 
         adapter = PhotoAdapter(displayedItems) { item ->
             openFullScreen(item)
@@ -86,11 +107,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        // Tab Filters
-        tabAll.setOnClickListener { selectTab(FilterTab.ALL) }
-        tabCertified.setOnClickListener { selectTab(FilterTab.CERTIFIED) }
-        tabTampered.setOnClickListener { selectTab(FilterTab.TAMPERED) }
-        tabUncertified.setOnClickListener { selectTab(FilterTab.UNCERTIFIED) }
+        // Section tabs
+        tabCamera.setOnClickListener { selectSection(GallerySection.CAMERA, tabCamera) }
+        tabScreenshots.setOnClickListener { selectSection(GallerySection.SCREENSHOTS, tabScreenshots) }
+        tabDownloads.setOnClickListener { selectSection(GallerySection.DOWNLOADS, tabDownloads) }
+        tabWhatsapp.setOnClickListener { selectSection(GallerySection.WHATSAPP, tabWhatsapp) }
+        tabInstagram.setOnClickListener { selectSection(GallerySection.INSTAGRAM, tabInstagram) }
 
         // Floating Bottom Actions
         findViewById<View>(R.id.btnLaunchCamera).setOnClickListener {
@@ -105,90 +127,110 @@ class MainActivity : AppCompatActivity() {
             loadGalleryPhotos()
         }
 
-        findViewById<View>(R.id.btnAuditAll).setOnClickListener {
-            auditAllPhotos()
-        }
-
         // Empty state buttons
-        findViewById<Button>(R.id.btnEmptyCapture).setOnClickListener {
+        findViewById<View>(R.id.btnEmptyCapture).setOnClickListener {
             startActivity(Intent(this, CameraActivity::class.java))
         }
 
-        findViewById<Button>(R.id.btnEmptySeed).setOnClickListener {
+        findViewById<View>(R.id.btnEmptySeed).setOnClickListener {
             seedDemoPhotos()
         }
     }
 
-    private fun selectTab(tab: FilterTab) {
-        currentFilter = tab
+    private fun selectSection(section: GallerySection, targetView: View) {
+        currentSection = section
 
-        val activeBg = R.drawable.bg_glass_pill_active
-        val activeTextColor = ContextCompat.getColor(this, R.color.ios_pill_active_text)
-        val inactiveTextColor = ContextCompat.getColor(this, R.color.ios_pill_inactive_text)
+        val fontHandjet = ResourcesCompat.getFont(this, R.font.handjet)
+        val fontQuicksand = ResourcesCompat.getFont(this, R.font.quicksand)
 
-        tabAll.background = null
-        tabAll.setTextColor(inactiveTextColor)
-        tabCertified.background = null
-        tabCertified.setTextColor(inactiveTextColor)
-        tabTampered.background = null
-        tabTampered.setTextColor(inactiveTextColor)
-        tabUncertified.background = null
-        tabUncertified.setTextColor(inactiveTextColor)
+        val activeBg = R.drawable.bg_liquid_glass_active
+        val inactiveBg = R.drawable.bg_liquid_glass_pill
 
-        when (tab) {
-            FilterTab.ALL -> {
-                tabAll.setBackgroundResource(activeBg)
-                tabAll.setTextColor(activeTextColor)
+        val activeColor = ContextCompat.getColor(this, R.color.text_primary)
+        val inactiveColor = ContextCompat.getColor(this, R.color.text_secondary)
+
+        // Reset all tabs to inactive state
+        listOf(
+            Triple(tabCamera, txtTabCamera, "Camera"),
+            Triple(tabScreenshots, txtTabScreenshots, "Screenshots"),
+            Triple(tabDownloads, txtTabDownloads, "Downloads"),
+            Triple(tabWhatsapp, txtTabWhatsapp, "WhatsApp"),
+            Triple(tabInstagram, txtTabInstagram, "Instagram")
+        ).forEach { (tab, text, _) ->
+            tab.setBackgroundResource(inactiveBg)
+            text.typeface = fontQuicksand
+            text.textSize = 14f
+            text.setTextColor(inactiveColor)
+        }
+
+        // Magnify and activate the selected tab
+        when (section) {
+            GallerySection.CAMERA -> {
+                tabCamera.setBackgroundResource(activeBg)
+                txtTabCamera.typeface = fontHandjet
+                txtTabCamera.textSize = 20f
+                txtTabCamera.setTextColor(activeColor)
+                activeSectionHeading.text = "CAMERA VAULT"
             }
-            FilterTab.CERTIFIED -> {
-                tabCertified.setBackgroundResource(activeBg)
-                tabCertified.setTextColor(activeTextColor)
+            GallerySection.SCREENSHOTS -> {
+                tabScreenshots.setBackgroundResource(activeBg)
+                txtTabScreenshots.typeface = fontHandjet
+                txtTabScreenshots.textSize = 20f
+                txtTabScreenshots.setTextColor(activeColor)
+                activeSectionHeading.text = "SCREENSHOTS"
             }
-            FilterTab.TAMPERED -> {
-                tabTampered.setBackgroundResource(activeBg)
-                tabTampered.setTextColor(activeTextColor)
+            GallerySection.DOWNLOADS -> {
+                tabDownloads.setBackgroundResource(activeBg)
+                txtTabDownloads.typeface = fontHandjet
+                txtTabDownloads.textSize = 20f
+                txtTabDownloads.setTextColor(activeColor)
+                activeSectionHeading.text = "DOWNLOADS"
             }
-            FilterTab.UNCERTIFIED -> {
-                tabUncertified.setBackgroundResource(activeBg)
-                tabUncertified.setTextColor(activeTextColor)
+            GallerySection.WHATSAPP -> {
+                tabWhatsapp.setBackgroundResource(activeBg)
+                txtTabWhatsapp.typeface = fontHandjet
+                txtTabWhatsapp.textSize = 20f
+                txtTabWhatsapp.setTextColor(activeColor)
+                activeSectionHeading.text = "WHATSAPP MEDIA"
+            }
+            GallerySection.INSTAGRAM -> {
+                tabInstagram.setBackgroundResource(activeBg)
+                txtTabInstagram.typeface = fontHandjet
+                txtTabInstagram.textSize = 20f
+                txtTabInstagram.setTextColor(activeColor)
+                activeSectionHeading.text = "INSTAGRAM"
             }
         }
 
-        applyFilter()
+        // Smoothly center the active tab in the HorizontalScrollView
+        sectionScrollView.post {
+            val scrollX = targetView.left - (sectionScrollView.width / 2) + (targetView.width / 2)
+            sectionScrollView.smoothScrollTo(scrollX.coerceAtLeast(0), 0)
+        }
+
+        applySectionFilter()
     }
 
-    private fun applyFilter() {
-        val filtered = when (currentFilter) {
-            FilterTab.ALL -> allGalleryItems
-            FilterTab.CERTIFIED -> allGalleryItems.filter {
-                it.status == VerificationStatus.GENUINE_CERTIFIED || it.status == VerificationStatus.LEGACY_CAMERA
-            }
-            FilterTab.TAMPERED -> allGalleryItems.filter {
-                it.status == VerificationStatus.TAMPERED_WARNING
-            }
-            FilterTab.UNCERTIFIED -> allGalleryItems.filter {
-                it.status == VerificationStatus.UNCERTIFIED_EXTERNAL
-            }
-        }
+    private fun applySectionFilter() {
+        // Exclusively filter media belonging only to currentSection
+        val filtered = allGalleryItems.filter { it.section == currentSection }
 
         displayedItems.clear()
         displayedItems.addAll(filtered)
         adapter.notifyDataSetChanged()
 
-        updateHeaderStats()
-        emptyState.visibility = if (displayedItems.isEmpty()) View.VISIBLE else View.GONE
-    }
+        val count = displayedItems.size
+        val certifiedCount = displayedItems.count { it.status == com.example.fretgallery.model.VerificationStatus.GENUINE_CERTIFIED }
 
-    private fun updateHeaderStats() {
-        val total = allGalleryItems.size
-        val certified = allGalleryItems.count { it.status == VerificationStatus.GENUINE_CERTIFIED }
-        val tampered = allGalleryItems.count { it.status == VerificationStatus.TAMPERED_WARNING }
+        headerStats.text = "$count Items • $certifiedCount Certified"
 
-        tabAll.text = "All ($total)"
-        tabCertified.text = "Certified ($certified)"
-        tabTampered.text = "Tampered ($tampered)"
-
-        headerStats.text = "$certified Certified Proofs • $total Total Media"
+        if (displayedItems.isEmpty()) {
+            emptyState.visibility = View.VISIBLE
+            emptyStateTitle.text = "No items in ${currentSection.name.lowercase().replaceFirstChar { it.uppercase() }}"
+            emptyStateSubtitle.text = "Only ${currentSection.name.lowercase()} photos are shown in this section."
+        } else {
+            emptyState.visibility = View.GONE
+        }
     }
 
     private fun loadGalleryPhotos() {
@@ -232,11 +274,14 @@ class MainActivity : AppCompatActivity() {
                         id.toString()
                     )
 
+                    val section = determineSection(relPath, dataPath, name)
+
                     val item = GalleryItem(
                         uri = contentUri,
                         name = name,
                         dateAdded = dateAdded,
                         sizeBytes = size,
+                        section = section,
                         isChecking = true
                     )
                     allGalleryItems.add(item)
@@ -246,8 +291,20 @@ class MainActivity : AppCompatActivity() {
             e.printStackTrace()
         }
 
-        applyFilter()
+        applySectionFilter()
         auditAllPhotos()
+    }
+
+    private fun determineSection(relPath: String, dataPath: String, name: String): GallerySection {
+        val path = "$relPath $dataPath $name".lowercase()
+
+        return when {
+            path.contains("screenshot") -> GallerySection.SCREENSHOTS
+            path.contains("whatsapp") -> GallerySection.WHATSAPP
+            path.contains("instagram") -> GallerySection.INSTAGRAM
+            path.contains("download") -> GallerySection.DOWNLOADS
+            else -> GallerySection.CAMERA
+        }
     }
 
     private fun auditAllPhotos() {
@@ -262,24 +319,35 @@ class MainActivity : AppCompatActivity() {
                     if (displayedItems.contains(item)) {
                         adapter.notifyItemChanged(displayedItems.indexOf(item))
                     }
-                    updateHeaderStats()
+                    val count = displayedItems.size
+                    val certifiedCount = displayedItems.count { it.status == com.example.fretgallery.model.VerificationStatus.GENUINE_CERTIFIED }
+                    headerStats.text = "$count Items • $certifiedCount Certified"
                 }
             }
         }
     }
 
     private fun seedDemoPhotos() {
-        Toast.makeText(this, "Minting sample cryptographic photos...", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Seeding cryptographic demo photos for all sections...", Toast.LENGTH_SHORT).show()
         CoroutineScope(Dispatchers.IO).launch {
-            // 1. Seed Genuine Certified Photo
-            SampleDataSeeder.seedSamplePhoto(this@MainActivity, SampleDataSeeder.SeedType.GENUINE_CERTIFIED, "GENUINE")
-            // 2. Seed Tampered Demo Photo
-            SampleDataSeeder.seedSamplePhoto(this@MainActivity, SampleDataSeeder.SeedType.TAMPERED_DEMO, "TAMPERED")
-            // 3. Seed Uncertified Photo
-            SampleDataSeeder.seedSamplePhoto(this@MainActivity, SampleDataSeeder.SeedType.UNCERTIFIED, "EXTERNAL")
+            // 1. Camera: Genuine Certified & Tampered Demo
+            SampleDataSeeder.seedSamplePhoto(this@MainActivity, SampleDataSeeder.SeedType.GENUINE_CERTIFIED, "CAMERA_GENUINE", "DCIM/fretG")
+            SampleDataSeeder.seedSamplePhoto(this@MainActivity, SampleDataSeeder.SeedType.TAMPERED_DEMO, "CAMERA_TAMPERED", "DCIM/fretG")
+            
+            // 2. Screenshots
+            SampleDataSeeder.seedSamplePhoto(this@MainActivity, SampleDataSeeder.SeedType.UNCERTIFIED, "SCREENSHOT", "Pictures/Screenshots")
+            
+            // 3. Downloads
+            SampleDataSeeder.seedSamplePhoto(this@MainActivity, SampleDataSeeder.SeedType.UNCERTIFIED, "DOWNLOAD", "Download")
+            
+            // 4. WhatsApp
+            SampleDataSeeder.seedSamplePhoto(this@MainActivity, SampleDataSeeder.SeedType.UNCERTIFIED, "WHATSAPP", "WhatsApp/Media/WhatsApp Images")
+            
+            // 5. Instagram
+            SampleDataSeeder.seedSamplePhoto(this@MainActivity, SampleDataSeeder.SeedType.UNCERTIFIED, "INSTAGRAM", "Pictures/Instagram")
 
             withContext(Dispatchers.Main) {
-                Toast.makeText(this@MainActivity, "Demo Photos Minted to DCIM/fretG!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "Demo Photos Minted across all 5 sections!", Toast.LENGTH_SHORT).show()
                 loadGalleryPhotos()
             }
         }

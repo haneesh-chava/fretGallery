@@ -22,7 +22,7 @@
             android:layout_marginBottom="16dp"
             android:background="@drawable/bg_glass_pill" />
 
-        <!-- Holographic Header Card -->
+        <!-- Holographic Header Banner -->
         <LinearLayout
             android:id="@+id/bannerCard"
             android:layout_width="match_parent"
@@ -34,8 +34,8 @@
 
             <ImageView
                 android:id="@+id/bannerIcon"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
                 android:src="@drawable/ic_shield_check" />
 
             <LinearLayout
@@ -49,18 +49,18 @@
                     android:id="@+id/bannerStatusTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-black"
-                    android:letterSpacing="0.02"
+                    android:fontFamily="@font/handjet"
+                    android:letterSpacing="0.04"
                     android:text="VERIFIED GENUINE"
                     android:textColor="@color/status_genuine"
-                    android:textSize="16sp" />
+                    android:textSize="22sp" />
 
                 <TextView
                     android:id="@+id/bannerStatusSubtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="@font/quicksand"
                     android:text="Cryptographic signature &amp; pixel steganography match"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
@@ -74,11 +74,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="8dp"
-            android:fontFamily="sans-serif-bold"
-            android:letterSpacing="0.05"
+            android:fontFamily="@font/handjet"
+            android:letterSpacing="0.04"
             android:text="IMAGE BIRTH CERTIFICATE"
-            android:textColor="@color/accent_cyan"
-            android:textSize="12sp" />
+            android:textColor="@color/accent_red_bright"
+            android:textSize="18sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -103,6 +103,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/quicksand"
                         android:text="Certificate ID"
                         android:textColor="@color/text_secondary"
                         android:textSize="11sp" />
@@ -112,10 +113,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:fontFamily="sans-serif-bold"
+                        android:fontFamily="@font/handjet"
                         android:text="FRETG-2026-9A3F18BC20DE"
                         android:textColor="@color/text_primary"
-                        android:textSize="14sp" />
+                        android:textSize="18sp" />
                 </LinearLayout>
 
                 <ImageView
@@ -126,7 +127,8 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:padding="6dp"
-                    android:src="@drawable/ic_copy" />
+                    android:src="@drawable/ic_copy"
+                    app:tint="@color/accent_red_bright" />
             </LinearLayout>
 
             <View
@@ -144,6 +146,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/quicksand"
                     android:text="Minted Timestamp (UTC)"
                     android:textColor="@color/text_secondary"
                     android:textSize="11sp" />
@@ -153,10 +156,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="@font/quicksand"
                     android:text="2026-08-23T01:45:00.120Z"
                     android:textColor="@color/text_primary"
-                    android:textSize="13sp" />
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <View
@@ -174,6 +178,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/quicksand"
                     android:text="Device Hardware Seal"
                     android:textColor="@color/text_secondary"
                     android:textSize="11sp" />
@@ -183,10 +188,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="@font/quicksand"
                     android:text="Android KeyStore HMAC-SHA256 Master Seal"
                     android:textColor="@color/text_primary"
-                    android:textSize="13sp" />
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
         </LinearLayout>
@@ -197,11 +203,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="8dp"
-            android:fontFamily="sans-serif-bold"
-            android:letterSpacing="0.05"
+            android:fontFamily="@font/handjet"
+            android:letterSpacing="0.04"
             android:text="FORENSIC DIGEST &amp; WATERMARK"
-            android:textColor="@color/accent_cyan"
-            android:textSize="12sp" />
+            android:textColor="@color/accent_red_bright"
+            android:textSize="18sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -226,6 +232,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:fontFamily="@font/quicksand"
                         android:text="Cryptographic Digest (SHA-256)"
                         android:textColor="@color/text_secondary"
                         android:textSize="11sp" />
@@ -237,7 +244,8 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:padding="4dp"
-                        android:src="@drawable/ic_copy" />
+                        android:src="@drawable/ic_copy"
+                        app:tint="@color/accent_red_bright" />
                 </LinearLayout>
 
                 <TextView
@@ -281,6 +289,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/quicksand"
                         android:text="Pixel Matrix Steganography"
                         android:textColor="@color/text_secondary"
                         android:textSize="11sp" />
@@ -289,10 +298,11 @@
                         android:id="@+id/txtStegoStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-semibold"
+                        android:fontFamily="@font/quicksand"
                         android:text="LSB Binary Frame &amp; CRC32 Intact"
                         android:textColor="@color/text_primary"
-                        android:textSize="13sp" />
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -304,11 +314,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="8dp"
-            android:fontFamily="sans-serif-bold"
-            android:letterSpacing="0.05"
+            android:fontFamily="@font/handjet"
+            android:letterSpacing="0.04"
             android:text="OPTICAL SENSOR TELEMETRY"
-            android:textColor="@color/accent_cyan"
-            android:textSize="12sp" />
+            android:textColor="@color/accent_red_bright"
+            android:textSize="18sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -331,6 +341,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/quicksand"
                         android:text="Camera &amp; Lens"
                         android:textColor="@color/text_secondary"
                         android:textSize="11sp" />
@@ -340,10 +351,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:fontFamily="sans-serif-semibold"
+                        android:fontFamily="@font/quicksand"
                         android:text="24mm (1x) • f/1.78"
                         android:textColor="@color/text_primary"
-                        android:textSize="13sp" />
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -355,6 +367,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/quicksand"
                         android:text="Exposure &amp; ISO"
                         android:textColor="@color/text_secondary"
                         android:textSize="11sp" />
@@ -364,10 +377,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:fontFamily="sans-serif-semibold"
+                        android:fontFamily="@font/quicksand"
                         android:text="ISO 100 • 1/240s"
                         android:textColor="@color/text_primary"
-                        android:textSize="13sp" />
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -392,6 +406,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/quicksand"
                         android:text="Resolution"
                         android:textColor="@color/text_secondary"
                         android:textSize="11sp" />
@@ -401,10 +416,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:fontFamily="sans-serif-semibold"
+                        android:fontFamily="@font/quicksand"
                         android:text="1080 x 1080 (1.2 MP)"
                         android:textColor="@color/text_primary"
-                        android:textSize="13sp" />
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -416,6 +432,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/quicksand"
                         android:text="Capture Engine"
                         android:textColor="@color/text_secondary"
                         android:textSize="11sp" />
@@ -425,10 +442,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:fontFamily="sans-serif-semibold"
+                        android:fontFamily="@font/quicksand"
                         android:text="fretG Optical Engine 1.0"
                         android:textColor="@color/text_primary"
-                        android:textSize="13sp" />
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -441,11 +459,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="8dp"
-            android:fontFamily="sans-serif-bold"
-            android:letterSpacing="0.05"
+            android:fontFamily="@font/handjet"
+            android:letterSpacing="0.04"
             android:text="FORENSIC AUDIT TRAIL"
-            android:textColor="@color/accent_cyan"
-            android:textSize="12sp" />
+            android:textColor="@color/accent_red_bright"
+            android:textSize="18sp" />
 
         <LinearLayout
             android:id="@+id/auditLogContainer"
@@ -455,30 +473,47 @@
             android:orientation="vertical"
             android:padding="16dp" />
 
-        <!-- Actions -->
-        <Button
+        <!-- Apple Capsule Action Buttons -->
+        <FrameLayout
             android:id="@+id/btnLiveAudit"
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="28dp"
-            android:background="@drawable/bg_ios_button_primary"
-            android:fontFamily="sans-serif-bold"
-            android:text="Run Forensic Audit Now"
-            android:textColor="#080B10"
-            android:textSize="15sp"
-            app:backgroundTint="@null" />
+            android:background="@drawable/bg_apple_button_red"
+            android:clickable="true"
+            android:focusable="true">
 
-        <Button
+            <TextView
+                android:id="@+id/txtLiveAudit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/handjet"
+                android:letterSpacing="0.04"
+                android:text="RUN FORENSIC AUDIT NOW"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp" />
+        </FrameLayout>
+
+        <FrameLayout
             android:id="@+id/btnCloseSheet"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginTop="10dp"
-            android:background="@drawable/bg_ios_button_secondary"
-            android:fontFamily="sans-serif-semibold"
-            android:text="Dismiss"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp"
-            app:backgroundTint="@null" />
+            android:background="@drawable/bg_apple_button"
+            android:clickable="true"
+            android:focusable="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/quicksand"
+                android:text="Dismiss"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </FrameLayout>
 
     </LinearLayout>
 

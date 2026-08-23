@@ -51,11 +51,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:fontFamily="sans-serif-black"
+                android:fontFamily="@font/handjet"
                 android:letterSpacing="0.05"
                 android:text="GENUINE"
                 android:textColor="@color/text_primary"
-                android:textSize="9sp" />
+                android:textSize="13sp" />
         </LinearLayout>
 
         <!-- Progress Spinner for active audit -->
@@ -65,7 +65,7 @@
             android:layout_height="20dp"
             android:layout_gravity="bottom|end"
             android:layout_margin="8dp"
-            android:indeterminateTint="@color/accent_cyan"
+            android:indeterminateTint="@color/accent_red_bright"
             android:visibility="gone" />
 
     </FrameLayout>

@@ -1,33 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Backgrounds & Surfaces -->
-    <color name="bg_dark">#080B10</color>
-    <color name="bg_dark_surface">#0F141F</color>
-    <color name="bg_glass_surface">#CC131926</color>
-    <color name="bg_glass_surface_light">#401E293B</color>
-    <color name="bg_glass_header">#D90A0E17</color>
-    <color name="bg_glass_bottom_bar">#E60D121D</color>
-    <color name="bg_glass_card">#20FFFFFF</color>
-    <color name="bg_glass_card_elevated">#2D374899</color>
+    <color name="bg_dark">#08090E</color>
+    <color name="bg_dark_surface">#0F121A</color>
+    <color name="bg_glass_surface">#D9131722</color>
+    <color name="bg_glass_surface_light">#401E2433</color>
+    <color name="bg_glass_header">#E6090B12</color>
+    <color name="bg_glass_bottom_bar">#E60C0E17</color>
+    <color name="bg_glass_card">#1AFFFFFF</color>
+    <color name="bg_glass_card_elevated">#261A2233</color>
     
-    <!-- Glass Borders & Dividers -->
-    <color name="glass_border">#25FFFFFF</color>
-    <color name="glass_border_highlight">#50FFFFFF</color>
-    <color name="glass_border_cyan">#6600F5D4</color>
-    <color name="glass_border_purple">#667928CA</color>
-
-    <!-- Brand & Accents -->
+    <!-- Rich Red & Radial Palette -->
+    <color name="accent_red_bright">#FF1E42</color>
+    <color name="accent_red_glow">#4DFF1E42</color>
+    <color name="accent_red_radial_start">#FF3B56</color>
+    <color name="accent_red_radial_center">#E11D48</color>
+    <color name="accent_red_radial_end">#9F1239</color>
+    <color name="accent_peach">#FFA07A</color>
     <color name="accent_cyan">#00F5D4</color>
-    <color name="accent_cyan_glow">#3300F5D4</color>
     <color name="accent_purple">#7928CA</color>
-    <color name="accent_blue">#007AFF</color>
-    <color name="accent_indigo">#6366F1</color>
-    
+
+    <!-- Glass Borders & Highlights -->
+    <color name="glass_border">#20FFFFFF</color>
+    <color name="glass_border_highlight">#45FFFFFF</color>
+    <color name="glass_border_red">#66FF1E42</color>
+    <color name="glass_border_red_glow">#99FF3B56</color>
+
+    <!-- Apple Button Elements -->
+    <color name="apple_btn_bg">#10131A</color>
+    <color name="apple_btn_border_outer">#40FF2A42</color>
+    <color name="apple_btn_border_inner">#30FFFFFF</color>
+    <color name="liquid_glass_active_bg">#26FF2A42</color>
+    <color name="liquid_glass_active_border">#80FF3B56</color>
+
     <!-- Verification Status Colors -->
     <color name="status_genuine">#10B981</color>
     <color name="status_genuine_glow">#3310B981</color>
-    <color name="status_tampered">#EF4444</color>
-    <color name="status_tampered_glow">#33EF4444</color>
+    <color name="status_tampered">#FF1E42</color>
+    <color name="status_tampered_glow">#33FF1E42</color>
     <color name="status_external">#64748B</color>
     <color name="status_legacy">#F59E0B</color>
 
@@ -37,9 +47,9 @@
     <color name="text_tertiary">#64748B</color>
     <color name="text_muted">#475569</color>
 
-    <!-- iOS Elements -->
-    <color name="ios_pill_bg">#1AFFFFFF</color>
-    <color name="ios_pill_active">#FFFFFF</color>
-    <color name="ios_pill_active_text">#080B10</color>
+    <!-- iOS Pill Elements -->
+    <color name="ios_pill_bg">#14FFFFFF</color>
+    <color name="ios_pill_active">#FF1E42</color>
+    <color name="ios_pill_active_text">#FFFFFF</color>
     <color name="ios_pill_inactive_text">#94A3B8</color>
 </resources>

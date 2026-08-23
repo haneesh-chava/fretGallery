@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="#33FF1E42">
+    <item>
+        <layer-list>
+            <!-- Outer Glow / Stroke Ring -->
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="@android:color/transparent" />
+                    <corners android:radius="100dp" />
+                    <stroke
+                        android:width="2dp"
+                        android:color="@color/apple_btn_border_outer" />
+                </shape>
+            </item>
+            <!-- Inner Bevel / Dark Capsule -->
+            <item
+                android:bottom="2dp"
+                android:left="2dp"
+                android:right="2dp"
+                android:top="2dp">
+                <shape android:shape="rectangle">
+                    <gradient
+                        android:angle="270"
+                        android:startColor="#1A1F2C"
+                        android:centerColor="#10131A"
+                        android:endColor="#0A0C11"
+                        android:type="linear" />
+                    <corners android:radius="100dp" />
+                    <stroke
+                        android:width="1dp"
+                        android:color="@color/apple_btn_border_inner" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+</ripple>
