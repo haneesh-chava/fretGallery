@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  fretg-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: fretg:latest
+    container_name: fretg_container
+    volumes:
+      - .:/app
+      - /app/.gradle
+      - /app/app/build
+    command: ./gradlew assembleDebug
